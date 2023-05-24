@@ -1,6 +1,4 @@
 use std::collections::HashMap;
-use std::fs::File;
-use std::io::prelude::*;
 use crate::common::{ Content,input };
 
 pub fn run(data: Vec<Content>) -> Option<i32>{
@@ -48,28 +46,3 @@ pub fn run(data: Vec<Content>) -> Option<i32>{
 	Some(0)
 
 }
-
-/// Content構造体からdata.jsonファイルを生成する。
-/// テスト用メソッド。
-#[allow(dead_code)]
-fn output_content() {
-    let c = Content {
-        text: String::from("text1"),
-        selects: HashMap::from([
-            (String::from("A"), String::from("questionA")),
-            (String::from("B"), String::from("questionB")),
-            (String::from("C"), String::from("questionC")),
-            (String::from("D"), String::from("questionD")),
-            ]),
-        answer: String::from("A"),
-    };
-    let s = serde_json::to_string(&c).expect("cannot create json data.");
-    println!("{}",s);
-    let mut f = File::create("data.json").expect("failed to create file.");
-    f.write_all(
-        serde_json::to_string(&c)
-            .unwrap_or_default()
-            .as_bytes(),
-    ).expect("cannot write to file.");
-}
-

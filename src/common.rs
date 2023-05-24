@@ -37,6 +37,16 @@ pub fn input_content() -> Option<Vec<Content>>{
     serde_json::from_str(s.as_str()).expect("cannot serialize to json.")
 }
 
+/// Content構造体からdata.jsonファイルを生成する。
+#[allow(dead_code)]
+fn output_content(c: Vec<Content>, file_name: &str) -> Result<(), ()> {
+    let s = serde_json::to_string(&c).expect("cannot create json data.");
+    let mut f = File::create(file_name).expect("failed to create file.");
+    f.write_all(s.as_bytes()).expect("cannot write to file.");
+
+    Ok(())
+}
+
 /// コンソール上で入力を受け付ける。引数で受け取った文字列を入力時のメッセージとして表示する。
 pub fn input(message: &str)-> String {
     use std::io::{stdin, stdout};
@@ -51,4 +61,34 @@ pub fn input(message: &str)-> String {
         s.pop();
     }
     s
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_output_content() {
+        let contents: Vec<Content> = {
+            let mut results: Vec<Content> = Vec::new();
+            for i in 0..100 {
+                let text = format!("text{}", i);
+                let mut selects: HashMap<String, String> = HashMap::new();
+                let answer = format!("ans{}", i);
+
+                for j in 1..=4 {
+                    selects.insert(format! {"{}",j}, format! {"selection{}",j});
+                }
+
+                results.push(Content {
+                    text,
+                    selects,
+                    answer,
+                });
+            }
+            results
+        };
+
+        assert_eq!(output_content(contents, "data_test.json"),Ok(()));
+    }
 }
