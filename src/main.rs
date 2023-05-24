@@ -2,6 +2,8 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io::prelude::*;
+
+// model
 #[derive(Deserialize, Serialize)]
 struct Content {
     text: String,
@@ -19,6 +21,8 @@ impl std::fmt::Display for Content {
         ", self.text,self.selects,self.answer)
     }
 }
+
+// main
 fn main(){
     // 入力結果保持用変数
     let mut received_answer = HashMap::new();
@@ -34,7 +38,6 @@ fn main(){
         //選択肢表示
         let mut selects_vec: Vec<(&String,&String)> = d.selects.iter().collect();
         selects_vec.sort();
-//        for (k,v) in &d.selects{
         for (k,v) in selects_vec{
             println!("{}: {}", k, v);
         }
@@ -63,6 +66,10 @@ fn main(){
     println!("{}/{}", correct_count, received_answer.len());
     input("終了するには何かキーを入力してください....");
 }
+
+/// データファイルを読み込みContentにマッピングする。
+/// データファイル名は環境変数「DATA_FILE」から取得する。
+/// 設定されていない場合はデフォルトで「data.json」を使用する。
 fn input_content() -> Vec<Content>{
     extern crate dotenv;
     use dotenv::dotenv;
@@ -72,9 +79,12 @@ fn input_content() -> Vec<Content>{
     let mut f = File::open(data_path).expect("cannot open file.");
     let mut s = String::new();
     f.read_to_string(&mut s).expect("cannot read file.");
-    serde_json::from_str(s.as_str()).expect("cannot serialize json.")
+
+    serde_json::from_str(s.as_str()).expect("cannot serialize to json.")
 }
 
+/// Content構造体からdata.jsonファイルを生成する。
+/// テスト用メソッド。
 #[allow(dead_code)]
 fn output_content() {
     let c = Content {
@@ -85,11 +95,6 @@ fn output_content() {
             (String::from("C"), String::from("questionC")),
             (String::from("D"), String::from("questionD")),
             ]),
-//       selects: vec![
-//        (String::from("A"), String::from("questionA")),
-//        (String::from("B"), String::from("questionB")),
-//        (String::from("C"), String::from("questionC")),
-//       ],
         answer: String::from("A"),
     };
     let s = serde_json::to_string(&c).expect("cannot create json data.");
@@ -102,6 +107,7 @@ fn output_content() {
     ).expect("cannot write to file.");
 }
 
+/// コンソール上で入力を受け付ける。引数で受け取った文字列を入力時のメッセージとして表示する。
 pub fn input(message: &str)-> String {
     use std::io::{stdin, stdout};
     let mut s = String::new();
