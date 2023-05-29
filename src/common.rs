@@ -3,7 +3,6 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::io::prelude::*;
 
-// model
 #[derive(Deserialize, Serialize)]
 pub struct Content {
     pub text: String,
